@@ -1,32 +1,72 @@
 import 'package:app_note/Views/Widgets/custom_app_bar.dart';
 import 'package:app_note/Views/Widgets/custom_text_filed.dart';
+import 'package:app_note/cubits/notes_cubit/notes_cubit.dart';
+import 'package:app_note/models/note_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class EditNoteViewBody extends StatelessWidget {
-  const EditNoteViewBody({super.key});
+class EditNoteViewBody extends StatefulWidget {
+  const EditNoteViewBody({super.key, required this.note});
+  final NoteModel note;
+
+  @override
+  State<EditNoteViewBody> createState() => _EditNoteViewBodyState();
+}
+
+TextEditingController t = TextEditingController();
+TextEditingController c = TextEditingController();
+
+class _EditNoteViewBodyState extends State<EditNoteViewBody> {
+  String? title, content;
+  late TextEditingController _titleController;
+  late TextEditingController _contentController;
+
+  @override
+  void initState() {
+    _titleController = TextEditingController(text: widget.note.title);
+    _contentController = TextEditingController(text: widget.note.subTitle);
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
           CustomAppBar(
+            onPressed: () async {
+              widget.note.title = title ?? widget.note.title;
+              widget.note.subTitle = content ?? widget.note.title;
+              widget.note.save();
+              BlocProvider.of<NotesCubit>(context).fetchAllNotes();
+              Navigator.pop(context);
+            },
             title: 'EditNote',
             icon: Icons.check,
           ),
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
-          CustomTextFiled(hint: "Title"),
-          SizedBox(
+          CustomTextFiled(
+              controller: _titleController,
+              onChanged: (value) {
+                title = value;
+              },
+              hint: widget.note.title),
+          const SizedBox(
             height: 16,
           ),
           CustomTextFiled(
-            hint: "Content",
+            controller: _contentController,
+            onChanged: (value) {
+              content = value;
+            },
+            hint: widget.note.subTitle,
             maxLines: 5,
           )
         ],
