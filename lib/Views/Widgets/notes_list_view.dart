@@ -27,7 +27,9 @@ class NotesListView extends StatelessWidget {
                       child: Text(
                         notes.isEmpty
                             ? "Add Your Beautiful Notes."
-                            : "This is the End Of Notes",
+                            : notes.length == 4
+                                ? "This is the End Of Notes"
+                                : "",
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,

@@ -80,8 +80,10 @@ class DataSearch extends SearchDelegate<String> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     child: Center(
-                        child: const Text(
-                      "This is the End Of Notes",
+                        child: Text(
+                      filteredNotes.length == 4
+                          ? "This is the End Of Notes"
+                          : "",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
