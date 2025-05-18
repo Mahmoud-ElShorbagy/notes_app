@@ -13,14 +13,12 @@ class EditNoteViewBody extends StatefulWidget {
   State<EditNoteViewBody> createState() => _EditNoteViewBodyState();
 }
 
-TextEditingController t = TextEditingController();
-TextEditingController c = TextEditingController();
-
 class _EditNoteViewBodyState extends State<EditNoteViewBody> {
   String? title, content;
   late TextEditingController _titleController;
   late TextEditingController _contentController;
-
+  final formKey = GlobalKey<FormState>();
+  AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
   @override
   void initState() {
     _titleController = TextEditingController(text: widget.note.title);
@@ -33,43 +31,49 @@ class _EditNoteViewBodyState extends State<EditNoteViewBody> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 50,
-          ),
-          CustomAppBar(
-            onPressed: () async {
-              widget.note.title = title ?? widget.note.title;
-              widget.note.subTitle = content ?? widget.note.title;
-              widget.note.save();
-              BlocProvider.of<NotesCubit>(context).fetchAllNotes();
-              Navigator.pop(context);
-            },
-            title: 'EditNote',
-            icon: Icons.check,
-          ),
-          const SizedBox(
-            height: 50,
-          ),
-          CustomTextFiled(
-              controller: _titleController,
-              onChanged: (value) {
-                title = value;
+      child: Form(
+        autovalidateMode: autovalidateMode,
+        key: formKey,
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 50,
+            ),
+            CustomAppBar(
+              onPressed: () async {
+                if (formKey.currentState!.validate()) {
+                  widget.note.title = title ?? widget.note.title;
+                  widget.note.subTitle = content ?? widget.note.title;
+                  widget.note.save();
+                  BlocProvider.of<NotesCubit>(context).fetchAllNotes();
+                  Navigator.pop(context);
+                }
               },
-              hint: widget.note.title),
-          const SizedBox(
-            height: 16,
-          ),
-          CustomTextFiled(
-            controller: _contentController,
-            onChanged: (value) {
-              content = value;
-            },
-            hint: widget.note.subTitle,
-            maxLines: 5,
-          )
-        ],
+              title: 'EditNote',
+              icon: Icons.check,
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+            CustomTextFiled(
+                controller: _titleController,
+                onChanged: (value) {
+                  title = value;
+                },
+                hint: widget.note.title),
+            const SizedBox(
+              height: 16,
+            ),
+            CustomTextFiled(
+              controller: _contentController,
+              onChanged: (value) {
+                content = value;
+              },
+              hint: widget.note.subTitle,
+              maxLines: 5,
+            )
+          ],
+        ),
       ),
     );
   }
